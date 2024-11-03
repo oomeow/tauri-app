@@ -1,3 +1,5 @@
+use std::time::Duration;
+
 use tauri::{
     menu::{Menu, MenuItem},
     tray::{MouseButton, TrayIconBuilder},
@@ -6,7 +8,9 @@ use tauri::{
 
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
 #[tauri::command]
-fn greet(name: &str) -> String {
+async fn greet(name: String) -> String {
+    // Suppose it took 5 seconds to perform other operations, like fetching data from an API.
+    std::thread::sleep(Duration::from_secs(5));
     format!("Hello, {}! You've been greeted from Rust!", name)
 }
 
