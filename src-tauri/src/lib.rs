@@ -1,6 +1,6 @@
 use tauri::{
     menu::{Menu, MenuItem},
-    tray::TrayIconBuilder,
+    tray::{MouseButton, TrayIconBuilder},
     Manager, WebviewUrl, WebviewWindowBuilder,
 };
 
@@ -21,11 +21,42 @@ pub fn run() {
             let menu = Menu::with_items(app, &[&show_window, &quit_i]).unwrap();
             let _ = TrayIconBuilder::new()
                 .icon(app.default_window_icon().unwrap().clone())
+                .on_tray_icon_event(|tray, event| match event {
+                    tauri::tray::TrayIconEvent::Click {
+                        button: MouseButton::Left,
+                        ..
+                    } => {
+                        let main_window = tray.app_handle().get_webview_window("main");
+                        match main_window {
+                            Some(window) => {
+                                let _ = window.unminimize();
+                                let _ = window.show();
+                                let _ = window.set_focus();
+                            }
+                            None => {
+                                let window = WebviewWindowBuilder::new(
+                                    tray.app_handle(),
+                                    "main",
+                                    WebviewUrl::default(),
+                                )
+                                .visible(false)
+                                .transparent(true)
+                                .shadow(false)
+                                .build()
+                                .unwrap();
+                                let _ = window.show();
+                                let _ = window.set_focus();
+                            }
+                        }
+                    }
+                    _ => {}
+                })
                 .menu(&menu)
                 .menu_on_left_click(false)
                 .on_menu_event(|app_handle, event| match event.id.as_ref() {
                     "show" => match app_handle.get_webview_window("main") {
                         Some(window) => {
+                            let _ = window.unminimize();
                             let _ = window.show();
                             let _ = window.set_focus();
                         }
@@ -35,6 +66,9 @@ pub fn run() {
                                 "main",
                                 WebviewUrl::default(),
                             )
+                            .visible(false)
+                            .transparent(true)
+                            .shadow(false)
                             .build()
                             .unwrap();
                             let _ = window.show();
@@ -52,6 +86,7 @@ pub fn run() {
 
             let window = WebviewWindowBuilder::new(app, "main", tauri::WebviewUrl::default())
                 .min_inner_size(800., 600.)
+                .visible(false)
                 .center()
                 .build()
                 .unwrap();
