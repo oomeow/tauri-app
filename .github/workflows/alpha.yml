@@ -67,7 +67,7 @@ jobs:
           releaseBody: "More new features are now supported."
           releaseDraft: true
           prerelease: false
-          tauriScript: pnpm
+          tauriScript: pnpm tauri
           args: --target ${{ matrix.target }}
 
   alpha-for-linux:
