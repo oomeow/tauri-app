@@ -2,9 +2,5 @@
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "desktop-capability",
   "platforms": ["macOS", "windows", "linux"],
-  "permissions": [
-    "window-state:default",
-    "window-state:allow-save-window-state",
-    "window-state:allow-restore-state"
-  ]
+  "permissions": []
 }
